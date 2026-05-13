@@ -22,14 +22,22 @@ jobs:
         with:
           flutter-version: '3.22.0'
 
-      - name: Create Android Project & Build
+      - name: Hardened Build Process
         run: |
-          flutter create . --platforms android --overwrite --project-name easy_loan
+          # 1. Pubspec name fix
+          sed -i 's/name: .*/name: easy_loan/' pubspec.yaml
+          
+          # 2. Sirf android files generate karo, lib folder ko touch mat karo
+          if [ ! -d "android" ]; then
+            flutter create . --platforms android --project-name easy_loan
+          fi
+          
+          # 3. Build APK (Isse counter app nahi banega)
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EasyLoan-Clean-Build
+          name: EasyLoan-Final-Success
           path: build/app/outputs/flutter-apk/app-release.apk

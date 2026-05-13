@@ -27,66 +27,75 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('EasyLoan Home', style: TextStyle(color: Colors.white)),
+        title: const Text('EasyLoan Home', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF1565C0),
         centerTitle: true,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Loan Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1565C0),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Welcome Back!', style: TextStyle(color: Colors.white, fontSize: 18)),
-                    SizedBox(height: 10),
-                    Text('₹ 5,00,000', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
-                    Text('Maximum Loan Limit', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                  ],
+        child: Column(
+          children: [
+            // Blue Top Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(25),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1565C0),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
               ),
-              const SizedBox(height: 25),
-              const Text('Quick Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildMenuCard(Icons.account_balance_wallet, 'Apply'),
-                  _buildMenuCard(Icons.history, 'History'),
-                  _buildMenuCard(Icons.person, 'Profile'),
+                  const Text('Available Limit', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                  const SizedBox(height: 10),
+                  const Text('₹ 5,00,000', style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Apply Now', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 30),
+            // Features Grid
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _actionIcon(Icons.account_balance, "History"),
+                  _actionIcon(Icons.payment, "Repay"),
+                  _actionIcon(Icons.person_outline, "Profile"),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuCard(IconData icon, String title) {
+  Widget _actionIcon(IconData icon, String label) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(12),
-          ),
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: Colors.blue.shade50,
           child: Icon(icon, color: const Color(0xFF1565C0), size: 30),
         ),
         const SizedBox(height: 8),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
       ],
     );
   }

@@ -38,6 +38,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Loan Card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -61,7 +62,7 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildMenuCard(Icons.account_balance_wallet, 'Apply Loan'),
+                  _buildMenuCard(Icons.account_balance_wallet, 'Apply'),
                   _buildMenuCard(Icons.history, 'History'),
                   _buildMenuCard(Icons.person, 'Profile'),
                 ],
@@ -78,7 +79,10 @@ class HomeScreen extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Icon(icon, color: const Color(0xFF1565C0), size: 30),
         ),
         const SizedBox(height: 8),

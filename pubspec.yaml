@@ -1,5 +1,6 @@
-name: easy_loan
-description: A new Flutter project.
+name: easyloan
+description: EasyLoan - Your Categories, Your Amount
+
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -9,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:

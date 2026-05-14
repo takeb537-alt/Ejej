@@ -23,21 +23,20 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      - name: Clean and Create Android
-        # '--force' use karenge taaki interactive mode na aaye
+      - name: Fresh Android Setup
+        # Humne '--force' hata diya hai kyunki 'rm -rf' pehle hi folder saaf kar dega
         run: |
           rm -rf android
-          flutter create . --platforms android --force
+          flutter create . --platforms android
 
       - name: Get Packages
         run: flutter pub get
 
       - name: Build Debug APK
-        # '--no-pub' use karenge kyunki hum pehle hi get kar chuke hain
-        run: flutter build apk --debug --no-pub
+        run: flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Professional-EasyLoan-APK
+          name: EasyLoan-APK
           path: build/app/outputs/flutter-apk/app-debug.apk

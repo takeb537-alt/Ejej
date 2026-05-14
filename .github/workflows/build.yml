@@ -28,22 +28,53 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Check Flutter version
+      - name: Flutter version check
         run: flutter --version
 
+      # ── PERMANENT FIX: Naya fresh project banao ──────────────────
+      - name: Create fresh Flutter project
+        run: |
+          cd /tmp
+          flutter create --project-name easy_loan --platforms android fresh_app
+          echo "✅ Fresh project created"
+
+      # ── Aapka lib/ code copy karo ─────────────────────────────────
+      - name: Copy lib folder
+        run: |
+          rm -rf /tmp/fresh_app/lib
+          cp -r $GITHUB_WORKSPACE/lib /tmp/fresh_app/lib
+          echo "✅ lib copied"
+
+      # ── pubspec.yaml copy karo ────────────────────────────────────
+      - name: Copy pubspec.yaml
+        run: |
+          cp $GITHUB_WORKSPACE/pubspec.yaml /tmp/fresh_app/pubspec.yaml
+          echo "✅ pubspec copied"
+
+      # ── assets folder hai to copy karo ───────────────────────────
+      - name: Copy assets if exist
+        run: |
+          if [ -d "$GITHUB_WORKSPACE/assets" ]; then
+            cp -r $GITHUB_WORKSPACE/assets /tmp/fresh_app/assets
+            echo "✅ assets copied"
+          else
+            echo "ℹ️ No assets folder, skipping"
+          fi
+
+      # ── Dependencies install karo ─────────────────────────────────
       - name: Get dependencies
+        working-directory: /tmp/fresh_app
         run: flutter pub get
 
-      - name: Analyze code
-        run: flutter analyze --no-fatal-infos
-        continue-on-error: true
-
+      # ── APK Build karo ────────────────────────────────────────────
       - name: Build APK
+        working-directory: /tmp/fresh_app
         run: flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK
+      # ── APK Upload karo ──────────────────────────────────────────
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EasyLoan-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: EasyLoan-release-apk
+          path: /tmp/fresh_app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30

@@ -1,43 +1,49 @@
 name: EasyLoan Build APK
+
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
 
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
+          channel: 'stable'
+          cache: true
 
-      - name: Hardened Build Process
-        run: |
-          # 1. Pubspec name fix
-          sed -i 's/name: .*/name: easy_loan/' pubspec.yaml
-          
-          # 2. Sirf android files generate karo, lib folder ko touch mat karo
-          if [ ! -d "android" ]; then
-            flutter create . --platforms android --project-name easy_loan
-          fi
-          
-          # 3. Build APK (Isse counter app nahi banega)
-          flutter pub get
-          flutter build apk --release --no-tree-shake-icons
+      - name: Check Flutter version
+        run: flutter --version
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EasyLoan-Final-Success
+          name: EasyLoan-release
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30

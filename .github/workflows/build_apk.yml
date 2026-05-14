@@ -23,15 +23,18 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      - name: Fresh Android Setup
-        # Ye command ek dum naya aur sahi android folder generate karegi
-        run: flutter create . --platforms android
+      - name: Clean and Create Android
+        # '--force' use karenge taaki interactive mode na aaye
+        run: |
+          rm -rf android
+          flutter create . --platforms android --force
 
       - name: Get Packages
         run: flutter pub get
 
       - name: Build Debug APK
-        run: flutter build apk --debug
+        # '--no-pub' use karenge kyunki hum pehle hi get kar chuke hain
+        run: flutter build apk --debug --no-pub
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

@@ -28,86 +28,114 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Flutter version check
-        run: flutter --version
+      - name: Accept Android licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Create fresh Flutter project
         run: |
-          cd /tmp
-          flutter create --project-name easy_loan --platforms android fresh_app
-          echo "✅ Fresh project created"
+          flutter create \
+            --project-name easy_loan \
+            --platforms android \
+            /tmp/fresh_app
 
       - name: Copy lib folder
         run: |
           rm -rf /tmp/fresh_app/lib
           cp -r $GITHUB_WORKSPACE/lib /tmp/fresh_app/lib
-          echo "✅ lib copied"
 
       - name: Copy pubspec.yaml
         run: |
           cp $GITHUB_WORKSPACE/pubspec.yaml /tmp/fresh_app/pubspec.yaml
-          echo "✅ pubspec copied"
+
+      - name: Fix pubspec name to easy_loan
+        run: |
+          sed -i 's/^name:.*/name: easy_loan/' /tmp/fresh_app/pubspec.yaml
 
       - name: Copy assets if exist
         run: |
           if [ -d "$GITHUB_WORKSPACE/assets" ]; then
             cp -r $GITHUB_WORKSPACE/assets /tmp/fresh_app/assets
-            echo "✅ assets copied"
-          else
-            echo "ℹ️ No assets folder"
           fi
 
-      - name: Fix pubspec name
-        working-directory: /tmp/fresh_app
+      - name: Fix android/app/build.gradle
         run: |
-          sed -i 's/^name:.*/name: easy_loan/' pubspec.yaml
-          cat pubspec.yaml | head -5
-          echo "✅ pubspec name fixed"
+          cat > /tmp/fresh_app/android/app/build.gradle << 'EOF'
+          plugins {
+              id "com.android.application"
+              id "kotlin-android"
+              id "dev.flutter.flutter-gradle-plugin"
+          }
 
-      - name: Accept Android licenses
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          echo "✅ Licenses accepted"
+          android {
+              namespace "com.example.easy_loan"
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "com.example.easy_loan"
+                  minSdk 21
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.debug
+                      minifyEnabled false
+                      shrinkResources false
+                  }
+              }
+          }
+
+          flutter {
+              source "../.."
+          }
+          EOF
 
       - name: Get dependencies
         working-directory: /tmp/fresh_app
-        run: |
-          flutter pub get
-          echo "✅ Dependencies ready"
+        run: flutter pub get
 
-      - name: Fix Dart errors check
-        working-directory: /tmp/fresh_app
-        run: |
-          flutter analyze --no-fatal-infos || true
-          echo "✅ Analyze done"
-
-      - name: Build APK
+      - name: Build release APK
         working-directory: /tmp/fresh_app
         run: |
           flutter build apk \
             --release \
-            --no-tree-shake-icons \
-            --no-shrink \
-            2>&1 | tee build_log.txt
-          echo "✅ APK Built!"
+            --no-tree-shake-icons
 
-      - name: Show APK info
-        working-directory: /tmp/fresh_app
+      - name: Verify APK exists
         run: |
-          ls -lh build/app/outputs/flutter-apk/
-          echo "✅ APK ready"
+          APK_PATH="/tmp/fresh_app/build/app/outputs/flutter-apk/app-release.apk"
+          if [ -f "$APK_PATH" ]; then
+            SIZE=$(du -h "$APK_PATH" | cut -f1)
+            echo "✅ APK ready! Size: $SIZE"
+          else
+            echo "❌ APK not found!"
+            find /tmp/fresh_app/build -name "*.apk" 2>/dev/null || echo "No APK anywhere"
+            exit 1
+          fi
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EasyLoan-release-apk
+          name: EasyLoan-APK
           path: /tmp/fresh_app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
-      - name: Upload build log on failure
+      - name: Upload error log if failed
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-error-log
-          path: /tmp/fresh_app/build_log.txt
+          name: error-logs
+          path: |
+            /tmp/fresh_app/build_log.txt
           retention-days: 7

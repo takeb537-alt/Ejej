@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'loan_details_screen.dart';
 import 'loan_categories_screen.dart';
 import 'profile_screen.dart';
+import 'drawer_menu.dart';
+import 'my_loans_screen.dart';
+import 'loan_calculator_screen.dart';
+import 'settings_screen.dart';
+import 'manage_bank_screen.dart';
+import 'notifications_screen.dart';
+import 'support_screen.dart';
+import 'about_screen.dart';
+import 'invite_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,39 +22,102 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   double _loanAmount = 1000;
+  bool _drawerOpen = false;
 
   final List<Map<String, dynamic>> _loanCards = [
-    {'label': 'Personal Loan', 'amount': '₹100', 'color': Color(0xFFDBEAFF), 'icon': Icons.monetization_on_outlined},
-    {'label': 'Personal Loan', 'amount': '₹500', 'color': Color(0xFFD0F0EC), 'icon': Icons.savings_outlined},
-    {'label': 'Personal Loan', 'amount': '₹1000', 'color': Color(0xFFDCF5E4), 'icon': Icons.account_balance_wallet_outlined},
-    {'label': 'Personal Loan', 'amount': '₹2000', 'color': Color(0xFFFFF3D0), 'icon': Icons.payments_outlined},
+    {
+      'label': 'Personal Loan',
+      'amount': '₹100',
+      'color': Color(0xFFDBEAFF),
+      'icon': Icons.monetization_on_outlined,
+    },
+    {
+      'label': 'Personal Loan',
+      'amount': '₹500',
+      'color': Color(0xFFD0F0EC),
+      'icon': Icons.savings_outlined,
+    },
+    {
+      'label': 'Personal Loan',
+      'amount': '₹1000',
+      'color': Color(0xFFDCF5E4),
+      'icon': Icons.account_balance_wallet_outlined,
+    },
+    {
+      'label': 'Personal Loan',
+      'amount': '₹2000',
+      'color': Color(0xFFFFF3D0),
+      'icon': Icons.payments_outlined,
+    },
   ];
 
   final List<Map<String, dynamic>> _categories = [
-    {'label': 'Medical', 'icon': Icons.medical_services_outlined, 'color': Color(0xFFDBEAFF)},
-    {'label': 'Education', 'icon': Icons.school_outlined, 'color': Color(0xFFD0F0EC)},
-    {'label': 'Travel', 'icon': Icons.flight_outlined, 'color': Color(0xFFFFE4E6)},
-    {'label': 'Business', 'icon': Icons.business_center_outlined, 'color': Color(0xFFFFF3D0)},
-    {'label': 'Vehicle', 'icon': Icons.directions_car_outlined, 'color': Color(0xFFEDE9FE)},
-    {'label': 'Home', 'icon': Icons.home_outlined, 'color': Color(0xFFFFEDD5)},
+    {
+      'label': 'Medical',
+      'icon': Icons.medical_services_outlined,
+      'color': Color(0xFFDBEAFF),
+    },
+    {
+      'label': 'Education',
+      'icon': Icons.school_outlined,
+      'color': Color(0xFFD0F0EC),
+    },
+    {
+      'label': 'Travel',
+      'icon': Icons.flight_outlined,
+      'color': Color(0xFFFFE4E6),
+    },
+    {
+      'label': 'Business',
+      'icon': Icons.business_center_outlined,
+      'color': Color(0xFFFFF3D0),
+    },
+    {
+      'label': 'Vehicle',
+      'icon': Icons.directions_car_outlined,
+      'color': Color(0xFFEDE9FE),
+    },
+    {
+      'label': 'Home',
+      'icon': Icons.home_outlined,
+      'color': Color(0xFFFFEDD5),
+    },
   ];
+
+  void _openDrawer() => setState(() => _drawerOpen = true);
+  void _closeDrawer() => setState(() => _drawerOpen = false);
+
+  Widget _getBody() {
+    switch (_currentIndex) {
+      case 0:
+        return _buildHomeContent();
+      case 1:
+        return LoanCategoriesScreen(isTab: true);
+      case 2:
+        return ProfileScreen(isTab: true);
+      default:
+        return _buildHomeContent();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
-      body: SafeArea(
-        child: _currentIndex == 0
-            ? _buildHome()
-            : _currentIndex == 1
-                ? const LoanCategoriesScreen(isTab: true)
-                : const ProfileScreen(isTab: true),
-      ),
-      bottomNavigationBar: _buildBottomNav(),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: const Color(0xFFF5F6FA),
+          body: SafeArea(child: _getBody()),
+          bottomNavigationBar: _buildBottomNav(),
+        ),
+        if (_drawerOpen)
+          AppDrawer(onClose: _closeDrawer),
+      ],
     );
   }
 
-  Widget _buildHome() {
+  // ─── HOME CONTENT ────────────────────────────────────────────────────────
+
+  Widget _buildHomeContent() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -83,14 +155,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─── TOP BAR ─────────────────────────────────────────────────────────────
+
   Widget _buildTopBar() {
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.menu, color: Color(0xFF1A1A2E)),
-          onPressed: () {},
+        // Hamburger menu - DRAWER OPEN KARTA HAI
+        GestureDetector(
+          onTap: _openDrawer,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.menu,
+              color: Color(0xFF1A1A2E),
+              size: 22,
+            ),
+          ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
+        // Search bar
         Expanded(
           child: Container(
             height: 42,
@@ -110,12 +205,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(width: 14),
                 Icon(Icons.search, color: Color(0xFF9CA3AF), size: 18),
                 SizedBox(width: 8),
-                Text('Search', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14)),
+                Text(
+                  'Search',
+                  style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+                ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
+        // Profile avatar - PROFILE TAB OPEN KARTA HAI
         GestureDetector(
           onTap: () => setState(() => _currentIndex = 2),
           child: Container(
@@ -126,12 +225,18 @@ class _HomeScreenState extends State<HomeScreen> {
               color: const Color(0xFFFFE0B2),
               border: Border.all(color: const Color(0xFFFFCC80), width: 2),
             ),
-            child: const Icon(Icons.person, color: Color(0xFF4A9B8E), size: 22),
+            child: const Icon(
+              Icons.person,
+              color: Color(0xFF4A9B8E),
+              size: 22,
+            ),
           ),
         ),
       ],
     );
   }
+
+  // ─── LOAN GRID ───────────────────────────────────────────────────────────
 
   Widget _buildLoanGrid() {
     return GridView.builder(
@@ -152,15 +257,15 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => LoanDetailsScreen(
-                  amount: card['amount'],
-                  color: card['color'],
+                  amount: card['amount'] as String,
+                  color: card['color'] as Color,
                 ),
               ),
             );
           },
           child: Container(
             decoration: BoxDecoration(
-              color: card['color'],
+              color: card['color'] as Color,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -176,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  card['label'],
+                  card['label'] as String,
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF4B5563),
@@ -187,14 +292,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      card['amount'],
+                      card['amount'] as String,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1A1A2E),
                       ),
                     ),
-                    Icon(card['icon'], size: 22, color: const Color(0xFF6B7280)),
+                    Icon(
+                      card['icon'] as IconData,
+                      size: 22,
+                      color: const Color(0xFF6B7280),
+                    ),
                   ],
                 ),
               ],
@@ -205,29 +314,42 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─── SECTION HEADER ──────────────────────────────────────────────────────
+
   Widget _buildSectionHeader(String title, {VoidCallback? onSwipe}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A2E),
-            )),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
         if (onSwipe != null)
           GestureDetector(
             onTap: onSwipe,
             child: const Row(
               children: [
-                Text('Swipe', style: TextStyle(fontSize: 13, color: Color(0xFF9CA3AF))),
-                Icon(Icons.chevron_right, size: 18, color: Color(0xFF9CA3AF)),
+                Text(
+                  'Swipe',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: Color(0xFF9CA3AF),
+                ),
               ],
             ),
           ),
       ],
     );
   }
+
+  // ─── CATEGORIES ROW ──────────────────────────────────────────────────────
 
   Widget _buildCategoriesRow() {
     return SizedBox(
@@ -246,15 +368,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 58,
                   height: 58,
                   decoration: BoxDecoration(
-                    color: cat['color'],
+                    color: cat['color'] as Color,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(cat['icon'], size: 26, color: const Color(0xFF4A9B8E)),
+                  child: Icon(
+                    cat['icon'] as IconData,
+                    size: 26,
+                    color: const Color(0xFF4A9B8E),
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  cat['label'],
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF4B5563)),
+                  cat['label'] as String,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF4B5563),
+                  ),
                 ),
               ],
             ),
@@ -264,13 +393,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─── AMOUNT SLIDER ───────────────────────────────────────────────────────
+
   Widget _buildAmountSlider() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Choose Your Amount',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1A2E))),
-        const SizedBox(height: 16),
+        const Text(
+          'Choose Your Amount',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
+        const SizedBox(height: 24),
         Stack(
           clipBehavior: Clip.none,
           children: [
@@ -279,8 +416,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 activeTrackColor: const Color(0xFF4A9B8E),
                 inactiveTrackColor: const Color(0xFFE5E7EB),
                 thumbColor: Colors.white,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+                thumbShape: const RoundSliderThumbShape(
+                  enabledThumbRadius: 10,
+                ),
+                overlayShape: const RoundSliderOverlayShape(
+                  overlayRadius: 18,
+                ),
                 trackHeight: 5,
                 overlayColor: const Color(0xFF4A9B8E).withOpacity(0.15),
               ),
@@ -298,7 +439,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   22,
               top: -32,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF4A9B8E),
                   borderRadius: BorderRadius.circular(8),
@@ -319,14 +463,25 @@ class _HomeScreenState extends State<HomeScreen> {
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('₹100', style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
-            Text('₹1000', style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
-            Text('₹2000', style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+            Text(
+              '₹100',
+              style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+            ),
+            Text(
+              '₹1000',
+              style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+            ),
+            Text(
+              '₹2000',
+              style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+            ),
           ],
         ),
       ],
     );
   }
+
+  // ─── GET STARTED BUTTON ──────────────────────────────────────────────────
 
   Widget _buildGetStartedButton() {
     return SizedBox(
@@ -347,14 +502,20 @@ class _HomeScreenState extends State<HomeScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF4A9B8E),
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
           elevation: 0,
         ),
-        child: const Text('Get Started',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        child: const Text(
+          'Get Started',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
       ),
     );
   }
+
+  // ─── BOTTOM NAVIGATION ───────────────────────────────────────────────────
 
   Widget _buildBottomNav() {
     return Container(
@@ -374,13 +535,28 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF4A9B8E),
         unselectedItemColor: const Color(0xFF9CA3AF),
-        selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+        selectedLabelStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         elevation: 0,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view_outlined), activeIcon: Icon(Icons.grid_view), label: 'Categories'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Categories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
       ),
     );

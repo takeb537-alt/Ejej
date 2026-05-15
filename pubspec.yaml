@@ -1,6 +1,5 @@
 name: medicine_reminder
 description: A simple offline medicine reminder app for elderly Indian users.
-# ऐप का पब्लिश स्कोप (स्थानीय रखने के लिए)
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -12,43 +11,30 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # सुंदर आइकन्स के लिए (डिफ़ॉल्ट)
   cupertino_icons: ^1.0.5
   
-  # 1. डेटा स्टोरेज के लिए स्थानीय डेटाबेस (SQLite)
+  # 🟢 Databases
   sqflite: ^2.3.0
-  path: ^1.8.3
+  path: ^1.9.0
+  path_provider: ^2.1.1
   
-  # 2. वॉयस रिकॉर्डिंग बटन के लिए (Record Audio)
-  record: ^5.0.4
-  
-  # 3. रिकॉर्ड की गई आवाज़ को लूप में बजाने के लिए (Audio Playback)
+  # 🟢 Audio (Versions locked to avoid conflicts)
+  record: ^5.1.0
   audioplayers: ^5.2.1
   
-  # 4. सटीक समय पर अलार्म और नोटिफिकेशन ट्रिगर करने के लिए
-  flutter_local_notifications: ^16.1.0
-  
-  # 5. ऐप शुरू होते ही परमिशन (Microphone, Notification) हैंडल करने के लिए
+  # 🟢 Notifications & Permissions
+  flutter_local_notifications: ^16.3.0
   permission_handler: ^11.1.0
-  
-  # 6. अलार्म के समय फोन को लगातार वाइब्रेट करने के लिए
   vibration: ^1.8.4
   
-  # 7. समय और तारीख को सही फॉर्मेट (HH:mm) में सेट करने के लिए
+  # 🟢 Utilities
   intl: ^0.19.0
-  
-  # 8. भाषा की पसंद (Hindi/English toggle) को लोकल सेव करने के लिए
   shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
-  # मटेरियल डिज़ाइन गाइडलाइन्स और इमोजी सपोर्ट का उपयोग करने के लिए
   uses-material-design: true
-
-  # नोट: चूंकि हम यूआई में डायरेक्ट इमोजीस (💊🔔⏰🛑) का उपयोग कर रहे हैं,
-  # इसलिए हमें किसी बाहरी इमेज एसेट्स को यहाँ जोड़ने की आवश्यकता नहीं है।
-  # इससे आपके ऐप का APK साइज 10 MB से कम रखने में मदद मिलेगी।

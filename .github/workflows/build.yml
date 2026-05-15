@@ -1,0 +1,52 @@
+name: Flutter APK Build
+
+# यह स्क्रिप्ट तब चलेगी जब आप 'main' या 'master' ब्रांच पर कोड push करेंगे
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    # GitHub इसे Ubuntu वर्चुअल मशीन पर चलाएगा
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. GitHub आपके कोड को चेकआउट (पुल) करेगा
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. जावा (Java) सेटअप करेगा जो एंड्रॉइड बिल्ड के लिए ज़रूरी है
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. फ़्लटर (Flutter) का स्टेबल वर्जन इंस्टॉल करेगा
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x' # या जो भी Flutter 3.0+ वर्जन आप इस्तेमाल कर रहे हों
+          channel: 'stable'
+          cache: true # इससे अगली बार बिल्ड तेज़ी से होगा
+
+      # 4. pubspec.yaml के सारे पैकेजेस डाउनलोड करेगा
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. आपके ऐप का APK बिल्ड करेगा (Release Mode में)
+      - name: Build APK
+        run: flutter build apk --release
+
+      # 6. बने हुए APK को GitHub पर अपलोड करेगा ताकि आप उसे डाउनलोड कर सकें
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: medicine-reminder-apk
+          path: build/app/outputs/flutter-apk/app-release.apk

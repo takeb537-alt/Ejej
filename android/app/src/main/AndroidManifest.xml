@@ -1,18 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/apk/res/android"
     package="com.example.medicine_reminder">
     
-    <!-- 🔒 APP PERMISSIONS (बुजुर्गों के अनुकूल फीचर्स के लिए जरूरी अनुमतियां) -->
-    <!-- वॉइस रिकॉर्डिंग के लिए -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- अलार्म बजते समय फोन वाइब्रेट करने के लिए -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- Android 13+ में नोटिफिकेशन दिखाने के लिए -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- फोन स्विच ऑफ होकर ऑन होने पर भी अलार्म चालू रखने के लिए -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- बैकग्राउंड में अलार्म सर्विस चलाने के लिए -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- सटीक समय पर अलार्म ट्रिगर करने के लिए -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
@@ -29,7 +22,6 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             
-            <!-- यह थीम फ्लटर स्क्रीन लोड होने तक वाइट बैकग्राउंड रखेगी -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -41,20 +33,16 @@
             </intent-filter>
         </activity>
 
-        <!-- 🔔 NOTIFICATION & BOOT RECEIVER (बैकग्राउंड अलार्म के लिए जरूरी) -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" android:exported="false" />
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <action android:name="android.quickboot.poweron" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
-        <!-- ताकि जब फ्लटर इंजन बैकग्राउंड में हो तो कोई एरर न आए -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
     </application>
 </manifest>

@@ -1,2 +1,0 @@
-      - name: Generate App Icons
-        run: flutter pub run flutter_launcher_icons
